@@ -2,6 +2,7 @@
 
 import { useTheme } from "@/hooks/use-theme";
 import type { StudyRoom } from "@/types/room";
+import { getRoomParticipants } from "@/data/study-rooms";
 import { Avatar, AvatarFallback, AvatarGroup } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export function StudyRoomPreview({ room }: { room: StudyRoom }) {
   const { motif } = useTheme();
   const [seconds, setSeconds] = useState(42 * 60);
   const [active, setActive] = useState(false);
+  const attendees = getRoomParticipants(room);
 
   useEffect(() => {
     if (!active) return;
@@ -27,8 +29,8 @@ export function StudyRoomPreview({ room }: { room: StudyRoom }) {
   return (
     <div className={`study-room-preview study-room-preview-${room.color}`}>
       <div className="study-preview-top">
-        <span className="room-mood">Live study room · {motif.fruitEmoji}</span>
-        <span>{room.participants + 1}/{room.capacity} seats</span>
+        <span className="room-mood">Sample study room · {motif.fruitEmoji}</span>
+        <span>{room.participants}/{room.capacity} seats</span>
       </div>
       <Card className="live-session-card gap-0 border-border/80 bg-card py-0 shadow-sm">
         <CardHeader className="border-b border-border/70 px-5 pt-5 pb-4">
@@ -38,7 +40,10 @@ export function StudyRoomPreview({ room }: { room: StudyRoom }) {
               <CardTitle className="text-2xl text-foreground">{room.name}</CardTitle>
               <CardDescription className="mt-1.5 max-w-sm text-[var(--muted)]">{room.description}</CardDescription>
             </div>
-            <Badge variant="outline" className="shrink-0 border-[var(--border)] text-[var(--muted)]">{motif.brandEmoji} {motif.name}</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="shrink-0 border-[var(--border)] text-[var(--muted)]">Preview</Badge>
+              <Badge variant="outline" className="shrink-0 border-[var(--border)] text-[var(--muted)]">{motif.brandEmoji} {motif.name}</Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-3 px-5 py-4 sm:grid-cols-[1.25fr_.75fr]">
@@ -63,8 +68,8 @@ export function StudyRoomPreview({ room }: { room: StudyRoom }) {
         </CardContent>
         <CardFooter className="justify-between gap-3 px-5 py-4 border-t border-border/70 bg-[var(--surface-soft)] rounded-b-xl">
           <div className="flex items-center gap-2">
-            <AvatarGroup>{["M", "N", "Y"].map((person) => <Avatar key={person} size="sm"><AvatarFallback className="bg-card text-[var(--primary)] font-bold">{person}</AvatarFallback></Avatar>)}</AvatarGroup>
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--muted)]"><Users size={14} /> studying now</span>
+            <AvatarGroup>{attendees.slice(0, 3).map((person) => <Avatar key={person} size="sm"><AvatarFallback className="bg-card text-[var(--primary)] font-bold">{person[0]}</AvatarFallback></Avatar>)}</AvatarGroup>
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--muted)]"><Users size={14} /> {room.participants} studying now</span>
           </div>
           <Button asChild size="sm" className="rounded-full px-4 font-bold"><Link href={`/rooms/${room.id}`}>Enter room <ArrowUpRight /></Link></Button>
         </CardFooter>
@@ -72,3 +77,4 @@ export function StudyRoomPreview({ room }: { room: StudyRoom }) {
     </div>
   );
 }
+

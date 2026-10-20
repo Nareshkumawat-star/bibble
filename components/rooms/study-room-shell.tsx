@@ -5,7 +5,9 @@ import { FocusTimerPanel } from "@/components/rooms/focus-timer-panel";
 import { StudyRoomScene } from "@/components/rooms/study-room-scene";
 import { StudyRoomSidebar } from "@/components/rooms/study-room-sidebar";
 import { ThemePicker } from "@/components/ui/theme-picker";
+import { getRoomParticipants } from "@/data/study-rooms";
 import { useFocusTimer } from "@/hooks/use-focus-timer";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import type { StudyRoom } from "@/types/room";
 import { ArrowLeft, Bell, Headphones, Sparkles, Users } from "lucide-react";
@@ -13,18 +15,22 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 
-const initialPeople = ["Mina", "Noah", "Leah", "Ari"];
+const defaultRoomNotes = [
+  "Finish one small thing before the timer ends.",
+  "No need to rush. Showing up counts.",
+];
 
 export function StudyRoomShell({ room }: { room: StudyRoom }) {
   const { motif } = useTheme();
   const { active, formattedTime, toggleTimer } = useFocusTimer(room.minutes);
+  const initialPeople = getRoomParticipants(room);
 
   const [joined, setJoined] = useState(false);
   const [note, setNote] = useState("");
-  const [notes, setNotes] = useState([
-    "Finish one small thing before the timer ends.",
-    "No need to rush. Showing up counts.",
-  ]);
+  const [notes, setNotes] = useLocalStorage<string[]>(
+    `bibble-room-notes-${room.id}`,
+    defaultRoomNotes
+  );
   const [soundscape, setSoundscape] = useState<Soundscape>("off");
   const [lampOn, setLampOn] = useState(true);
   const [catHearts, setCatHearts] = useState<number>(0);
@@ -54,8 +60,21 @@ export function StudyRoomShell({ room }: { room: StudyRoom }) {
     if (note.trim()) {
       setNotes((current) => [...current, note.trim()]);
       setNote("");
-      triggerToast("Note added to the room board 📝");
+      triggerToast("Note saved to your browser 📝");
     }
+  };
+
+  const currentParticipants = room.participants + (joined ? 1 : 0);
+  const isFull = !joined && currentParticipants >= room.capacity;
+
+  const handleToggleJoin = () => {
+    if (!joined && isFull) {
+      triggerToast(`This sample room is full! (${room.capacity}/${room.capacity} seats)`);
+      return;
+    }
+    const nextJoined = !joined;
+    setJoined(nextJoined);
+    triggerToast(nextJoined ? "You took a seat at the table! 🍵" : "You stepped away.");
   };
 
   return (
@@ -104,13 +123,14 @@ export function StudyRoomShell({ room }: { room: StudyRoom }) {
             <div>
               <span className="eyebrow">
                 <Headphones size={14} /> {room.topic}
+                <span className="sample-room-pill">Sample room</span>
               </span>
               <h1>{room.name}</h1>
               <p>{room.description}</p>
             </div>
             <div className="room-live-count">
               <Users size={16} />
-              <strong>{room.participants + (joined ? 1 : 0)}</strong>
+              <strong>{currentParticipants}</strong>
               <span>studying now</span>
             </div>
           </div>
@@ -120,7 +140,7 @@ export function StudyRoomShell({ room }: { room: StudyRoom }) {
             <AmbientSound onSoundscapeChange={(s) => setSoundscape(s)} />
           </div>
 
-          {/* Shared Focus Timer Panel */}
+          {/* Focus Timer Panel */}
           <FocusTimerPanel
             minutes={room.minutes}
             formattedTime={formattedTime}
@@ -136,11 +156,7 @@ export function StudyRoomShell({ room }: { room: StudyRoom }) {
           notes={notes}
           noteInput={note}
           initialPeople={initialPeople}
-          onToggleJoin={() => {
-            const nextJoined = !joined;
-            setJoined(nextJoined);
-            triggerToast(nextJoined ? "You joined the table! 🍵" : "You stepped away.");
-          }}
+          onToggleJoin={handleToggleJoin}
           onNoteInputChange={setNote}
           onAddNote={handleAddNote}
         />

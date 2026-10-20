@@ -24,6 +24,9 @@ export function StudyRoomSidebar({
   onNoteInputChange,
   onAddNote,
 }: StudyRoomSidebarProps) {
+  const occupied = room.participants + (joined ? 1 : 0);
+  const isFull = !joined && occupied >= room.capacity;
+
   return (
     <aside className="room-sidebar">
       <div className="room-side-section">
@@ -31,15 +34,17 @@ export function StudyRoomSidebar({
           <span>
             <Users size={15} /> Around the table
           </span>
-          <span>{room.capacity} seats</span>
+          <span>
+            {occupied}/{room.capacity} seats
+          </span>
         </div>
         <div className="people-list">
-          {initialPeople.slice(0, room.participants).map((person, index) => (
-            <div className="person-row" key={person}>
-              <span className={`person-avatar person-avatar-${index}`}>{person[0]}</span>
+          {initialPeople.map((person, index) => (
+            <div className="person-row" key={`${person}-${index}`}>
+              <span className={`person-avatar person-avatar-${index % 4}`}>{person[0]}</span>
               <span>{person}</span>
               {index === 0 && <small className="badge-host">host</small>}
-              {index === 1 && <Check size={14} className="check-icon" />}
+              {index > 0 && index <= 2 && <Check size={14} className="check-icon" />}
             </div>
           ))}
           {joined && (
@@ -51,12 +56,18 @@ export function StudyRoomSidebar({
           )}
         </div>
         <button
-          className={`join-room-button ${joined ? "joined-room" : ""}`}
+          className={`join-room-button ${joined ? "joined-room" : ""} ${isFull ? "room-full-button" : ""}`}
           onClick={onToggleJoin}
+          disabled={isFull}
+          aria-disabled={isFull}
         >
           {joined ? (
             <>
-              <Check size={16} /> You are in the room
+              <Check size={16} /> You are at the table
+            </>
+          ) : isFull ? (
+            <>
+              <Users size={16} /> Room is full ({room.capacity}/{room.capacity})
             </>
           ) : (
             <>
@@ -80,10 +91,11 @@ export function StudyRoomSidebar({
           <span>
             <MessageCircle size={15} /> Room notes
           </span>
+          <small className="room-notes-saved-label">Saved locally</small>
         </div>
         <div className="room-note-list">
-          {notes.map((item) => (
-            <div className="room-note" key={item}>
+          {notes.map((item, idx) => (
+            <div className="room-note" key={`${item}-${idx}`}>
               {item}
             </div>
           ))}
@@ -92,7 +104,7 @@ export function StudyRoomSidebar({
           <input
             value={noteInput}
             onChange={(e) => onNoteInputChange(e.target.value)}
-            placeholder="Leave a small note..."
+            placeholder="Leave a small note (saved to browser)..."
             aria-label="Leave a room note"
           />
           <button aria-label="Send room note">

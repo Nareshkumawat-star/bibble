@@ -20,7 +20,7 @@ export function FocusTimerPanel({
     <div className="focus-panel">
       <div className="focus-panel-heading">
         <span className="eyebrow">
-          <Clock3 size={14} /> Shared focus timer
+          <Clock3 size={14} /> Room focus timer
         </span>
         <span>Session goal · {minutes} min</span>
       </div>
@@ -31,7 +31,7 @@ export function FocusTimerPanel({
         >
           {formattedTime}
         </motion.span>
-        <small>{active ? "✨ The room is in focus mode" : "Ready when you are"}</small>
+        <small>{active ? "✨ Focus timer running locally" : "Ready when you are"}</small>
       </div>
       <button className="focus-button" onClick={onToggleActive}>
         {active ? (

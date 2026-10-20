@@ -58,3 +58,32 @@ export const studyRooms: StudyRoom[] = [
 export function getStudyRoom(id: string) {
   return studyRooms.find((room) => room.id === id);
 }
+
+export function getTotalStudyParticipants(): number {
+  return studyRooms.reduce((sum, room) => sum + room.participants, 0);
+}
+
+const sampleLearnerNames = [
+  "Kai",
+  "Sora",
+  "Elena",
+  "Devon",
+  "Rin",
+  "Maya",
+  "Leo",
+  "Zoe",
+  "Sam",
+  "Chloe",
+  "Felix",
+  "Nora",
+];
+
+export function getRoomParticipants(room: StudyRoom): string[] {
+  const attendees: string[] = [room.host];
+  const pool = sampleLearnerNames.filter((name) => name !== room.host);
+  for (let i = 0; attendees.length < room.participants && i < pool.length; i++) {
+    attendees.push(pool[i]);
+  }
+  return attendees;
+}
+

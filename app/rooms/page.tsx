@@ -2,13 +2,14 @@
 
 import { StudyRoomCard } from "@/components/rooms/study-room-card";
 import { SiteHeader } from "@/components/site-header";
-import { studyRooms } from "@/data/study-rooms";
+import { getTotalStudyParticipants, studyRooms } from "@/data/study-rooms";
 import { Search, Star, Users } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
 export default function RoomsPage() {
   const [query, setQuery] = useState("");
+  const totalLearners = getTotalStudyParticipants();
 
   const rooms = useMemo(
     () =>
@@ -38,10 +39,10 @@ export default function RoomsPage() {
         </div>
         <div className="rooms-counter">
           <Users size={18} />
-          <strong>21</strong>
+          <strong>{totalLearners}</strong>
           <span>
-            people learning<br />
-            together right now
+            sample learners<br />
+            across quiet rooms
           </span>
         </div>
       </section>
@@ -57,7 +58,7 @@ export default function RoomsPage() {
           />
         </div>
         <span className="rooms-toolbar-note">
-          {rooms.length} open rooms · no sign-up needed
+          {rooms.length} sample rooms · no sign-up needed
         </span>
       </div>
 

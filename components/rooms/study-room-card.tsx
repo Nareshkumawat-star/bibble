@@ -1,6 +1,7 @@
 "use client";
 
 import type { StudyRoom } from "@/types/room";
+import { getRoomParticipants } from "@/data/study-rooms";
 import { ArrowUpRight, BookOpen, Clock3, Headphones, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
 
@@ -13,6 +14,7 @@ const moodIcons = {
 
 export function StudyRoomCard({ room }: { room: StudyRoom }) {
   const MoodIcon = moodIcons[room.mood as keyof typeof moodIcons] || Headphones;
+  const attendees = getRoomParticipants(room);
 
   return (
     <article className={`room-card room-card-${room.color}`}>
@@ -21,6 +23,7 @@ export function StudyRoomCard({ room }: { room: StudyRoom }) {
           <span className="room-mood">
             <MoodIcon size={13} /> {room.mood}
           </span>
+          <span className="room-preview-badge">Preview</span>
           <span className="room-seat-count">
             <Users size={13} /> {room.participants}/{room.capacity} seats
           </span>
@@ -47,8 +50,9 @@ export function StudyRoomCard({ room }: { room: StudyRoom }) {
         </div>
         <div className="room-art-avatars">
           <div className="mini-avatar-stack">
-            <span>{room.host[0]}</span>
-            <span>N</span>
+            {attendees.slice(0, 2).map((person) => (
+              <span key={person}>{person[0]}</span>
+            ))}
           </div>
           <small>Host: {room.host}</small>
         </div>

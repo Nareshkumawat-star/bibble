@@ -4,7 +4,7 @@ import { MapPreview } from "@/components/map/map-preview";
 import { StudyRoomPreview } from "@/components/rooms/study-room-preview";
 import { SiteHeader } from "@/components/site-header";
 import { defaultMap } from "@/data/sample-maps";
-import { studyRooms } from "@/data/study-rooms";
+import { getTotalStudyParticipants, studyRooms } from "@/data/study-rooms";
 import { useTheme } from "@/hooks/use-theme";
 import { ArrowDown, ArrowUpRight, Check, Headphones, Star, Users } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +17,7 @@ const steps = [
 
 export default function Home() {
   const { motif } = useTheme();
+  const totalLearners = getTotalStudyParticipants();
 
   return (
     <main className="home-page">
@@ -46,7 +47,7 @@ export default function Home() {
               <i />
               <i />
             </span>
-            <span>{motif.treatEmoji} 21 curious minds are learning together.</span>
+            <span>{motif.treatEmoji} {totalLearners} sample learners across quiet tables.</span>
           </div>
         </div>
         <StudyRoomPreview room={studyRooms[0]} />
