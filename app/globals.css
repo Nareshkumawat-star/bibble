@@ -1106,8 +1106,12 @@ html[data-theme="strawberry-lemonade"] .room-roomscape::before {
 .focus-clock { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .focus-clock span { font: 500 72px Georgia, serif; letter-spacing: -.06em; color: var(--foreground); line-height: 1; }
 .focus-clock small { font: 600 12px Arial, sans-serif; color: var(--muted); margin-top: 4px; }
-.focus-button { min-width: 220px; min-height: 46px; border: 0; border-radius: 99px; background: var(--primary); color: #fff; font: 700 13px Arial, sans-serif; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow); transition: transform 0.15s ease, filter 0.15s ease; }
+.focus-button { min-width: 200px; min-height: 46px; border: 0; border-radius: 99px; background: var(--primary); color: #fff; font: 700 13px Arial, sans-serif; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow); transition: transform 0.15s ease, filter 0.15s ease; }
 .focus-button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.focus-actions { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 280px; }
+.focus-reset-button { width: 46px; height: 46px; border: 1px solid var(--border); border-radius: 50%; background: var(--card); color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.focus-reset-button:hover { background: var(--surface-soft); color: var(--primary); border-color: var(--primary); transform: rotate(-30deg); }
+.focus-panel.focus-panel-completed { border-color: var(--primary); box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 15%, transparent); }
 
 .room-sidebar { display: flex; flex-direction: column; gap: 20px; }
 .room-side-section { padding: 22px; border: 1px solid var(--border); border-radius: 20px; background: var(--card); box-shadow: 0 4px 16px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 16px; }

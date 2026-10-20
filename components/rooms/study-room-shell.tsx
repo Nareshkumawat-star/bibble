@@ -15,9 +15,46 @@ import { useState } from "react";
 
 const initialPeople = ["Mina", "Noah", "Leah", "Ari"];
 
+function playGentleChime() {
+  if (typeof window === "undefined") return;
+  try {
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const now = ctx.currentTime;
+    [523.25, 659.25, 783.99].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+      gain.gain.setValueAtTime(0, now + idx * 0.12);
+      gain.gain.linearRampToValueAtTime(0.15, now + idx * 0.12 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 1.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.12);
+      osc.stop(now + idx * 0.12 + 1.2);
+    });
+  } catch {}
+}
+
 export function StudyRoomShell({ room }: { room: StudyRoom }) {
   const { motif } = useTheme();
-  const { active, formattedTime, toggleTimer } = useFocusTimer(room.minutes);
+
+  const handleSessionComplete = () => {
+    triggerToast("🎉 Focus session complete! Time to stretch and rest. 🍵");
+    playGentleChime();
+  };
+
+  const {
+    active,
+    isCompleted,
+    formattedTime,
+    toggleTimer,
+    reset: resetTimer,
+  } = useFocusTimer(room.minutes, { onComplete: handleSessionComplete });
 
   const [joined, setJoined] = useState(false);
   const [note, setNote] = useState("");
@@ -120,12 +157,14 @@ export function StudyRoomShell({ room }: { room: StudyRoom }) {
             <AmbientSound onSoundscapeChange={(s) => setSoundscape(s)} />
           </div>
 
-          {/* Shared Focus Timer Panel */}
+          {/* Focus Timer Panel */}
           <FocusTimerPanel
             minutes={room.minutes}
             formattedTime={formattedTime}
             active={active}
+            isCompleted={isCompleted}
             onToggleActive={toggleTimer}
+            onReset={resetTimer}
           />
         </section>
 
